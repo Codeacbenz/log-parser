@@ -152,7 +152,8 @@ def insert_chunk_with_retry(client, table_ref, chunk, chunk_number):
 
     for attempt in range(1, max_attempts + 1):
         try:
-            errors = client.insert_rows_json(table_ref, chunk)
+            row_ids = [row.get("id") for row in chunk]
+            errors = client.insert_rows_json(table_ref, chunk, row_ids=row_ids)
 
             if not errors:
                 return True  # Success!
@@ -176,7 +177,7 @@ def insert_chunk_with_retry(client, table_ref, chunk, chunk_number):
 def remove_duplicates(client):
     """
     Remove duplicate rows from the BigQuery table.
-    We keep only the LATEST row for each unique 'ref' value.
+    We keep only the LATEST row for each unique 'id' value.
 
     This uses a SQL query to do the deduplication.
     ROW_NUMBER() assigns a number to each row, ordered by date (newest first).
@@ -193,7 +194,7 @@ def remove_duplicates(client):
             FROM (
                 SELECT *,
                     ROW_NUMBER() OVER (
-                        PARTITION BY ref       -- group rows with the same ref
+                        PARTITION BY id        -- group rows with the same record id
                         ORDER BY created DESC  -- newest first
                     ) AS row_num
                 FROM {full_table_name}
@@ -217,7 +218,7 @@ def split_into_chunks(lst, chunk_size):
         yield lst[i : i + chunk_size]
 
 
-def save_to_csv(rows, file_path):
+def save_to_csv(rows, file_path, append=False):
     """
     Save rows to a CSV file instead of BigQuery.
     Useful for testing — you can open the CSV in Excel to check your data.
@@ -229,9 +230,13 @@ def save_to_csv(rows, file_path):
 
     column_names = [col["name"] for col in TABLE_SCHEMA]
 
-    with open(file_path, "w", newline="", encoding="utf-8") as f:
+    mode = "a" if append else "w"
+
+    with open(file_path, mode, newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=column_names, extrasaction="ignore")
-        writer.writeheader()
+        if not append:
+            writer.writeheader()
         writer.writerows(rows)
 
-    print(f"✅ Saved {len(rows):,} rows to CSV: {file_path}")
+    action = "Appended" if append else "Saved"
+    print(f"{action} {len(rows):,} rows to CSV: {file_path}")

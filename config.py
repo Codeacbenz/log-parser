@@ -12,8 +12,14 @@ SOURCE_FILE = "crown_interactive_january_logs.json"
 # Where should we save the output CSV?
 OUTPUT_FILE = "output.csv"
 
+# Use "csv" for local validation or "bigquery" when GCP credentials are configured.
+LOAD_TARGET = "csv"
+
 
 FAILED_RECORDS_FILE = "failed_records.jsonl"
+
+# Missing text values are normalized to this so SQL can query them consistently.
+MISSING_TEXT_VALUE = "UNKNOWN"
 
 # ── BigQuery Settings ──────────────────────────────────────────
 # Fill these in when you're ready to load data into BigQuery.
