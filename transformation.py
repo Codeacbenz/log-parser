@@ -100,7 +100,7 @@ def handle_missing_values(row):
         cleaned[key] = value
 
     for field in TEXT_FIELDS:
-        if cleaned.get(field) is None:
+        if field in cleaned and cleaned[field] is None:
             cleaned[field] = config.MISSING_TEXT_VALUE
 
     if cleaned.get("success") is None:

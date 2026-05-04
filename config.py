@@ -13,7 +13,7 @@ SOURCE_FILE = "crown_interactive_january_logs.json"
 OUTPUT_FILE = "output.csv"
 
 # Use "csv" for local validation or "bigquery" when GCP credentials are configured.
-LOAD_TARGET = "csv"
+LOAD_TARGET = "bigquery"
 
 
 FAILED_RECORDS_FILE = "failed_records.jsonl"
@@ -25,9 +25,9 @@ MISSING_TEXT_VALUE = "UNKNOWN"
 # Fill these in when you're ready to load data into BigQuery.
 # For now, you can leave them as placeholders.
 
-GCP_PROJECT_ID = "your-gcp-project-id"   # e.g. "my-company-project"
-BQ_DATASET    = "crown_logs"             # like a "folder" in BigQuery
-BQ_TABLE      = "parsed_logs"           # like a "spreadsheet" inside the folder
+GCP_PROJECT_ID = "elegant-atom-467904-k0"   # e.g. "my-company-project"
+BQ_DATASET    = "Test_Pipeline"             # like a "folder" in BigQuery
+BQ_TABLE      = "Data_Parser_FullPipeline"           # like a "spreadsheet" inside the folder
 
 # How many rows to send to BigQuery at a time?
 # Smaller = safer but slower. 500 is a good default.
